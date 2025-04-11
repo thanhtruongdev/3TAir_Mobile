@@ -53,9 +53,13 @@ fun MainView(viewModel : AirQualityViewModel) {
         mutableStateOf(Date())
     }
 
+    var airQuality = AirQuality(0, Date(), 0.0, 0.0, 0, 0.0)
+
     val airQualityList = viewModel.airQuality.observeAsState().value?.toList()
 
-    val airQuality = airQualityList?.get(airQualityList.size - 1) ?: AirQuality(0, Date(), 0.0, 0.0, 0, 0.0)
+    if (airQualityList != null && airQualityList.isNotEmpty()) {
+        airQuality = airQualityList?.get(airQualityList.size - 1) ?: AirQuality(0, Date(), 0.0, 0.0, 0, 0.0)
+    }
 
     val prediction = viewModel.prediction.observeAsState().value?.toList()
 
@@ -64,7 +68,7 @@ fun MainView(viewModel : AirQualityViewModel) {
             .fillMaxSize()
     ) {
         Image(
-            painterResource(R.drawable.background_10),
+            painterResource(R.drawable.background_1),
             contentDescription = "Background",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
@@ -320,7 +324,7 @@ fun MainView(viewModel : AirQualityViewModel) {
                             .padding(0.dp, 12.dp)
                     )
                     Text(
-                        text = "µm/m3",
+                        text = "µg/m³",
                         fontSize = 16.sp,
                         color = colorResource(R.color.white),
                         fontFamily = FontFamily(Font(R.font.be_vietnam_light)),
@@ -382,7 +386,7 @@ fun MainView(viewModel : AirQualityViewModel) {
                     )
 
                     Image(
-                        painterResource(Utils.iconList[airQuality?.airQuality ?: 0]),
+                        painterResource(R.drawable.wind_24),
                         contentDescription = null,
                         modifier = Modifier
                             .constrainAs(qualityIcon) {
@@ -442,7 +446,10 @@ fun MainView(viewModel : AirQualityViewModel) {
 
                     }
                     .padding(12.dp, 0.dp)
-                    .horizontalScroll(rememberScrollState()),
+                    .horizontalScroll(
+                        rememberScrollState(),
+                        reverseScrolling = true
+                    ),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             )
             {
@@ -469,13 +476,15 @@ fun MainView(viewModel : AirQualityViewModel) {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
-                        text = "Lịch sử về chất lượng không khí trong ngày",
+                        text = "Lịch sử về chất lượng không khí trong ngày (µm/m3)",
                         fontFamily = FontFamily(Font(R.font.be_vietnam_light)),
                         fontSize = 14.sp,
                         color = colorResource(R.color.white),
                         modifier = Modifier.padding(12.dp, 12.dp)
                     )
-                    DustChart(airQualityList)
+                    if (airQualityList != null && airQualityList.isNotEmpty()) {
+                        DustChart(airQualityList)
+                    }
                 }
             }
 
@@ -497,13 +506,16 @@ fun MainView(viewModel : AirQualityViewModel) {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
-                        text = "Lịch sử về nhiệt độ trong ngày",
+                        text = "Lịch sử về nhiệt độ trong ngày (°C)",
                         fontFamily = FontFamily(Font(R.font.be_vietnam_light)),
                         fontSize = 14.sp,
                         color = colorResource(R.color.white),
                         modifier = Modifier.padding(12.dp, 12.dp)
                     )
-                    TemperatureChart(airQualityList)
+                    if (airQualityList != null && airQualityList.isNotEmpty()) {
+                        TemperatureChart(airQualityList)
+                    }
+
                 }
             }
 
@@ -526,13 +538,15 @@ fun MainView(viewModel : AirQualityViewModel) {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
-                        text = "Lịch sử về độ ẩm trong ngày",
+                        text = "Lịch sử về độ ẩm trong ngày (%)",
                         fontFamily = FontFamily(Font(R.font.be_vietnam_light)),
                         fontSize = 14.sp,
                         color = colorResource(R.color.white),
                         modifier = Modifier.padding(12.dp, 12.dp)
                     )
-                    HumidityChart(airQualityList)
+                    if (airQualityList != null && airQualityList.isNotEmpty()) {
+                        HumidityChart(airQualityList)
+                    }
                 }
             }
         }

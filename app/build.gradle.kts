@@ -60,15 +60,16 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1")
     implementation("com.google.android.gms:play-services-location:21.0.1")
     implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
-    implementation(libs.vico.compose)
-    implementation(libs.vico.compose.m2)
-    implementation(libs.vico.compose.m3)
-    implementation(libs.vico.views)
+
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation ("androidx.compose.runtime:runtime-livedata:1.7.6")
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
-    implementation("com.github.madrapps:plot:0.1.1")
+
     implementation ("io.github.ehsannarmani:compose-charts:0.1.2")
+
+    implementation ("androidx.glance:glance-appwidget:1.1.1" )
+    implementation ("androidx.glance:glance-material3:1.1.1")
+    implementation ("androidx.glance:glance-material:1.1.1")
 
 }
