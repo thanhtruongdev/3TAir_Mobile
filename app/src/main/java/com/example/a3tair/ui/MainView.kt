@@ -1,6 +1,5 @@
 package com.example.a3tair.ui
 
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -44,12 +43,13 @@ import androidx.constraintlayout.compose.Dimension
 import com.example.a3tair.R
 import com.example.a3tair.models.AirQuality
 import com.example.a3tair.utils.Utils
+import com.example.a3tair.viewModel.AiViewModel
 import com.example.a3tair.viewModel.AirQualityViewModel
 import java.time.LocalDateTime
 import java.util.Date
 
 @Composable
-fun MainView(viewModel : AirQualityViewModel) {
+fun MainView(viewModel : AirQualityViewModel, aiViewModel : AiViewModel) {
 
     val context = LocalContext.current
 
@@ -58,14 +58,13 @@ fun MainView(viewModel : AirQualityViewModel) {
     }
 
     var locationCity = viewModel.locationState.collectAsState().value
-
     var airQuality = AirQuality(0, LocalDateTime.now().toString(), 0.0, 0.0, 0, 0.0)
-
     val airQualityList = viewModel.airQuality.observeAsState().value?.toList()
+    val aiAdvice = aiViewModel.advice.collectAsState().value ?: ""
 
     LaunchedEffect(Unit) {
         viewModel.fetchLocation(context)
-        Log.i("LAUNCHED EFFECT","$locationCity")
+        aiViewModel.generateAdvice(Utils.nameList[airQuality.airQuality])
     }
 
     if (airQualityList != null && airQualityList.isNotEmpty()) {
@@ -155,6 +154,7 @@ fun MainView(viewModel : AirQualityViewModel) {
                     updatedTime = Date()
                     viewModel.reloadData()
                     viewModel.fetchLocation(context)
+                    aiViewModel.generateAdvice(Utils.nameList[airQuality.airQuality])
                 },
                 enabled = airQuality != null,
                 content = {
@@ -383,7 +383,8 @@ fun MainView(viewModel : AirQualityViewModel) {
 
                     if (airQuality.airQuality != 0) {
                         Text(
-                            text = Utils.adviceList[airQuality?.airQuality ?: 0],
+//                            text = Utils.adviceList[airQuality?.airQuality ?: 0],
+                            text = aiAdvice,
                             color = colorResource(R.color.white),
                             fontFamily = FontFamily(Font(R.font.be_vietnam_light)),
                             fontSize = 14.sp,

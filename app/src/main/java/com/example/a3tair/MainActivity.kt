@@ -3,6 +3,7 @@ package com.example.a3tair
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,17 +18,20 @@ import androidx.core.content.ContextCompat
 import com.example.a3tair.ui.MainView
 import com.example.a3tair.ui.TopAppBar
 import com.example.a3tair.ui.theme._3TAirTheme
+import com.example.a3tair.viewModel.AiViewModel
 import com.example.a3tair.viewModel.AirQualityViewModel
 import com.example.a3tair.widget.scheduleWidgetUpdate
 
 class MainActivity : ComponentActivity() {
     private val viewModel: AirQualityViewModel by viewModels()
+    private val aiViewModel: AiViewModel by viewModels()
     val requestPermissionLauncher = registerForActivityResult(
     ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
             viewModel.fetchLocation(this)
         } else {
+            Toast.makeText(this, "Vui lòng cấp quyền truy cập vị trí", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -56,7 +60,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .padding(innerPadding)
                     ) {
-                        MainView(viewModel)
+                        MainView(viewModel,aiViewModel)
                     }
                 }
             }

@@ -8,6 +8,8 @@ import java.util.TimeZone
 object Utils {
     const val BASE_URL = "https://ebfd-103-199-27-145.ngrok-free.app/"
 
+    const val AI_API_KEY = "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"
+
     fun formatDateTime(dateString: String): String {
         return try {
             val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale("vi", "VN"))
