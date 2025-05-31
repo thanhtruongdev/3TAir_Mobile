@@ -1,22 +1,49 @@
 package com.example.a3tair.utils
 
-import com.example.a3tair.R
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 object Utils {
-    const val BASE_URL = "https://eac4-103-199-69-181.ngrok-free.app/"
+    const val BASE_URL = "https://ebfd-103-199-27-145.ngrok-free.app/"
 
-    fun formatDateTime(date : Date): String {
+    fun formatDateTime(dateString: String): String {
+        return try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale("vi", "VN"))
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+            val outputFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale("vi", "VN"))
+            outputFormat.timeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh")
+
+            val date = inputFormat.parse(dateString)
+            outputFormat.format(date)
+        } catch (e: Exception) {
+            "Invalid date"
+        }
+    }
+
+    fun formatDateTimeFromSimple(date : Date): String {
         val formatter = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         return formatter.format(date)
     }
 
-    fun formatDateTimeOnlyHour(date : Date): String {
-        val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-        return formatter.format(date)
+
+    fun formatDateTimeOnlyHour(dateString: String): String {
+        return try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale("vi", "VN"))
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
+            val outputFormat = SimpleDateFormat("HH:mm", Locale("vi", "VN"))
+            outputFormat.timeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh")
+
+            val date = inputFormat.parse(dateString)
+            outputFormat.format(date)
+        } catch (e: Exception) {
+            "Invalid date"
+        }
     }
+
 
     val adviceList = arrayOf(
         "Chưa có dữ liệu!",
@@ -55,4 +82,6 @@ object Utils {
         val temperature : Double,
         val humidity : Double
     )
+
+    var locationName = ""
 }

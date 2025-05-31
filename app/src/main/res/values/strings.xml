@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">3TAir</string>
+    <string name="glance_widget_class">com.example.a3tair.Widget</string>
 </resources>

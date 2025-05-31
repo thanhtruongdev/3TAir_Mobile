@@ -10,7 +10,7 @@ import kotlin.collections.forEach
 fun TemperatureChart(airQuality : List<AirQuality>?) {
     var tempList = arrayListOf<Double>()
     airQuality?.let { it ->
-        airQuality.forEach { it ->
+        airQuality.reversed().forEach { it ->
             tempList += it.temperature
         }
     }

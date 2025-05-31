@@ -9,7 +9,7 @@ import kotlin.collections.forEach
 fun DustChart(airQuality: List<AirQuality>?) {
     val dustList = arrayListOf<Double>()
     airQuality?.let { it ->
-        airQuality.forEach { it ->
+        airQuality.reversed().forEach { it ->
             dustList += it.dust
         }
     }

@@ -58,7 +58,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1")
-    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
 
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
@@ -71,5 +71,11 @@ dependencies {
     implementation ("androidx.glance:glance-appwidget:1.1.1" )
     implementation ("androidx.glance:glance-material3:1.1.1")
     implementation ("androidx.glance:glance-material:1.1.1")
+
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+
+    implementation ("androidx.work:work-runtime-ktx:2.8.1")
+    implementation ("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
 
 }

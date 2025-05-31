@@ -9,9 +9,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.a3tair.MainActivity
 import com.example.a3tair.models.AirQuality
 import com.example.a3tair.models.Prediction
 import com.example.a3tair.retrofit.RetrofitInstance
+import com.example.a3tair.utils.Utils
+import com.example.a3tair.widget.LocationService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class AirQualityViewModel : ViewModel() {
@@ -21,8 +27,8 @@ class AirQualityViewModel : ViewModel() {
     var airQuality : LiveData<List<AirQuality>> = _airQuality
     var _prediction = MutableLiveData<List<Prediction>>()
     var prediction : LiveData<List<Prediction>> = _prediction
-
-    var isLoaded = false
+    val _location = MutableStateFlow<String?>("Không xác định")
+    val locationState: StateFlow<String?> = _location.asStateFlow()
 
     init {
         getAirQualityData()
@@ -39,13 +45,11 @@ class AirQualityViewModel : ViewModel() {
             val response = airQualityApi.getAirQualityData()
             try {
                 if (response.isSuccessful) {
-                    isLoaded = true
                     Log.i("DATA", response.body().toString())
                     response.body()?.let {
                         _airQuality.value = it.airQualityDtos
+
                     }
-                } else {
-                    isLoaded = false
                     println("Error: ${response.code()} - ${response.message()}")
                 }
             } catch (e: Exception) {
@@ -68,6 +72,22 @@ class AirQualityViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 Log.e("Error", "Error fetching data: ${e.message}")
+            }
+        }
+    }
+
+    fun fetchLocation(context: Context) {
+        val locationService = LocationService(context)
+        viewModelScope.launch {
+            val location = locationService.getCurrentLocation()
+            if (location != null) {
+                _location.value = location.cityName
+                Utils.locationName = location.cityName.toString()
+                Log.i("LOCATION IN VIEWMODEL", _location.value.toString())
+            } else {
+                Log.e("ERROR", "Can not get location")
+                _location.value = "Không xác định"
+                Utils.locationName = "Không xác định"
             }
         }
     }

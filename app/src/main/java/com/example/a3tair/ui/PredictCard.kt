@@ -88,7 +88,7 @@ fun PredictionCard(prediction: Prediction) {
 
 @Composable
 fun RenderPredictCard(prediction: List<Prediction>) {
-    prediction.forEach { it ->
+    prediction.reversed().forEach { it ->
         PredictionCard(it)
     }
 }

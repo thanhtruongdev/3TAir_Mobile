@@ -9,7 +9,7 @@ import kotlin.collections.forEach
 fun HumidityChart(airQuality: List<AirQuality>?) {
     var humidityList = arrayListOf<Double>()
     airQuality?.let { it ->
-        airQuality.forEach { it ->
+        airQuality.reversed().forEach { it ->
             humidityList += it.humidity
         }
     }

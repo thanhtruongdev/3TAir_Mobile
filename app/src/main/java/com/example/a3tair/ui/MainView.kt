@@ -1,5 +1,6 @@
 package com.example.a3tair.ui
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -20,6 +21,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -42,6 +45,7 @@ import com.example.a3tair.R
 import com.example.a3tair.models.AirQuality
 import com.example.a3tair.utils.Utils
 import com.example.a3tair.viewModel.AirQualityViewModel
+import java.time.LocalDateTime
 import java.util.Date
 
 @Composable
@@ -53,12 +57,19 @@ fun MainView(viewModel : AirQualityViewModel) {
         mutableStateOf(Date())
     }
 
-    var airQuality = AirQuality(0, Date(), 0.0, 0.0, 0, 0.0)
+    var locationCity = viewModel.locationState.collectAsState().value
+
+    var airQuality = AirQuality(0, LocalDateTime.now().toString(), 0.0, 0.0, 0, 0.0)
 
     val airQualityList = viewModel.airQuality.observeAsState().value?.toList()
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchLocation(context)
+        Log.i("LAUNCHED EFFECT","$locationCity")
+    }
+
     if (airQualityList != null && airQualityList.isNotEmpty()) {
-        airQuality = airQualityList?.get(airQualityList.size - 1) ?: AirQuality(0, Date(), 0.0, 0.0, 0, 0.0)
+        airQuality = airQualityList?.get(0) ?: AirQuality(0, LocalDateTime.now().toString(), 0.0, 0.0, 0, 0.0)
     }
 
     val prediction = viewModel.prediction.observeAsState().value?.toList()
@@ -115,7 +126,7 @@ fun MainView(viewModel : AirQualityViewModel) {
             )
 
             Text(
-                text = "TP.Hồ Chí Minh",
+                text = locationCity.toString(),
                 color = colorResource(R.color.white),
                 fontFamily = FontFamily(Font(R.font.be_vietnam_semibold)),
                 modifier = Modifier
@@ -127,7 +138,7 @@ fun MainView(viewModel : AirQualityViewModel) {
             )
 
             Text(
-                text = "Cập nhật lúc ${Utils.formatDateTime(updatedTime)}",
+                text = "Cập nhật lúc ${Utils.formatDateTimeFromSimple(updatedTime)}",
                 color = colorResource(R.color.white),
                 fontFamily = FontFamily(Font(R.font.be_vietnam_light)),
                 modifier = Modifier
@@ -143,8 +154,9 @@ fun MainView(viewModel : AirQualityViewModel) {
                     Toast.makeText(context, "Đang tải dữ liệu...", Toast.LENGTH_SHORT).show()
                     updatedTime = Date()
                     viewModel.reloadData()
+                    viewModel.fetchLocation(context)
                 },
-                enabled = if(airQuality != null) true else false,
+                enabled = airQuality != null,
                 content = {
                     Image(
                         painter = painterResource(R.drawable.rotate_right_24),
@@ -368,61 +380,62 @@ fun MainView(viewModel : AirQualityViewModel) {
                 ) {
                     val (txtLabel, txtAdvice, qualityIcon, txtAirQuality) = createRefs()
 
-                    Text(
-                        text = Utils.adviceList[airQuality?.airQuality ?: 0],
-                        color = colorResource(R.color.white),
-                        fontFamily = FontFamily(Font(R.font.be_vietnam_light)),
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Justify,
-                        modifier = Modifier
-                            .constrainAs (txtAdvice) {
-                                start.linkTo(parent.start, margin = 12.dp)
-                                top.linkTo(parent.top, margin = 12.dp)
-                                end.linkTo(qualityIcon.start, margin = 12.dp)
-                                bottom.linkTo(parent.bottom, margin = 12.dp)
 
-                                width = Dimension.fillToConstraints
-                            }
-                    )
-
-                    Image(
-                        painterResource(R.drawable.wind_24),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .constrainAs(qualityIcon) {
-                                top.linkTo(parent.top, margin = 12.dp)
-                                end.linkTo(parent.end, margin = 12.dp)
-                            }
-                            .size(96.dp),
-                        contentScale = ContentScale.FillBounds
-                    )
-
-                    Card (
-                        modifier = Modifier
-                            .constrainAs (txtAirQuality) {
-                                top.linkTo(qualityIcon.bottom, margin = 12.dp)
-                                start.linkTo(qualityIcon.start)
-                                end.linkTo(qualityIcon.end)
-                                bottom.linkTo(parent.bottom, margin = 12.dp)
-                                width = Dimension.preferredWrapContent
-                            },
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFFFFFFF)
-                        ),
-                        border = BorderStroke(1.dp, Color(Utils.colorList[airQuality?.airQuality ?: 0]))
-                    ){
+                    if (airQuality.airQuality != 0) {
                         Text(
-                            text = Utils.nameList[airQuality?.airQuality ?: 0],
-                            fontFamily = FontFamily(Font(R.font.be_vietnam_medium)),
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center,
-                            color = Color(Utils.colorList[airQuality?.airQuality ?: 0]),
+                            text = Utils.adviceList[airQuality?.airQuality ?: 0],
+                            color = colorResource(R.color.white),
+                            fontFamily = FontFamily(Font(R.font.be_vietnam_light)),
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Justify,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(6.dp)
-                        )
-                    }
+                                .constrainAs (txtAdvice) {
+                                    start.linkTo(parent.start, margin = 12.dp)
+                                    top.linkTo(parent.top, margin = 12.dp)
+                                    end.linkTo(qualityIcon.start, margin = 12.dp)
+                                    bottom.linkTo(parent.bottom, margin = 12.dp)
 
+                                    width = Dimension.fillToConstraints
+                                }
+                        )
+                        Image(
+                            painterResource(R.drawable.wind_24),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .constrainAs(qualityIcon) {
+                                    top.linkTo(parent.top, margin = 12.dp)
+                                    end.linkTo(parent.end, margin = 12.dp)
+                                }
+                                .size(96.dp),
+                            contentScale = ContentScale.FillBounds
+                        )
+
+                        Card (
+                            modifier = Modifier
+                                .constrainAs (txtAirQuality) {
+                                    top.linkTo(qualityIcon.bottom, margin = 12.dp)
+                                    start.linkTo(qualityIcon.start)
+                                    end.linkTo(qualityIcon.end)
+                                    bottom.linkTo(parent.bottom, margin = 12.dp)
+                                    width = Dimension.preferredWrapContent
+                                },
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFFFFFFFF)
+                            ),
+                            border = BorderStroke(1.dp, Color(Utils.colorList[airQuality?.airQuality ?: 0]))
+                        ){
+                            Text(
+                                text = Utils.nameList[airQuality.airQuality],
+                                fontFamily = FontFamily(Font(R.font.be_vietnam_medium)),
+                                fontSize = 12.sp,
+                                textAlign = TextAlign.Center,
+                                color = Color(Utils.colorList[airQuality.airQuality ]),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(6.dp)
+                            )
+                        }
+                    }
                 }
             }
 
@@ -476,7 +489,7 @@ fun MainView(viewModel : AirQualityViewModel) {
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
-                        text = "Lịch sử về chất lượng không khí trong ngày (µm/m3)",
+                        text = "Lịch sử về chất lượng không khí trong ngày (µg/m³)",
                         fontFamily = FontFamily(Font(R.font.be_vietnam_light)),
                         fontSize = 14.sp,
                         color = colorResource(R.color.white),
